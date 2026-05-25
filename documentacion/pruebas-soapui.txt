@@ -1,0 +1,149 @@
+=====================================
+EJERCICIO BASE - LOGIN
+=====================================
+MÉTODO: POST
+URL: http://localhost:3000/login
+HEADERS: Content-Type: application/json
+BODY:
+{
+  "email": "admin@correo.com",
+  "password": "123456"
+}
+RESULTADO ESPERADO: Retorna accessToken y datos del usuario.
+RESULTADO OBTENIDO: ✅ OK
+
+=====================================
+EJERCICIO BASE - GET PRODUCTOS (con token)
+=====================================
+MÉTODO: GET
+URL: http://localhost:3000/productos
+HEADERS: Authorization: Bearer <token>
+BODY: (ninguno)
+RESULTADO ESPERADO: Lista de productos en JSON.
+RESULTADO OBTENIDO: ✅ OK
+
+=====================================
+EJERCICIO BASE - GET PRODUCTOS (sin token)
+=====================================
+MÉTODO: GET
+URL: http://localhost:3000/productos
+HEADERS: (ninguno)
+BODY: (ninguno)
+RESULTADO ESPERADO: "Missing authorization header"
+RESULTADO OBTENIDO: ✅ OK
+=====================================
+
+
+--------------
+|   TALLER   |
+--------------
+
+
+
+=====================================
+EJERCICIO 1 - LOGIN COMO ADMIN
+=====================================
+MÉTODO: POST
+URL: http://localhost:3000/login
+HEADERS: Content-Type: application/json
+BODY:
+{
+  "email": "admin@correo.com",
+  "password": "123456"
+}
+RESULTADO ESPERADO: accessToken + user.role = "admin"
+
+=====================================
+EJERCICIO 1 - LOGIN COMO USER
+=====================================
+MÉTODO: POST
+URL: http://localhost:3000/login
+HEADERS: Content-Type: application/json
+BODY:
+{
+  "email": "user@correo.com",
+  "password": "123456"
+}
+RESULTADO ESPERADO: accessToken + user.role = "user"
+=====================================
+
+
+=====================================
+EJERCICIO 2 - REGISTRO EXITOSO
+=====================================
+MÉTODO: POST
+URL: http://localhost:3000/register
+HEADERS: Content-Type: application/json
+BODY:
+{
+  "email": "nuevo@correo.com",
+  "password": "1234",
+  "role": "user",
+  "activo": true
+}
+RESULTADO ESPERADO: accessToken + user recién creado
+
+=====================================
+EJERCICIO 2 - CORREO DUPLICADO
+=====================================
+MÉTODO: POST
+URL: http://localhost:3000/register
+HEADERS: Content-Type: application/json
+BODY:
+{
+  "email": "admin@correo.com",
+  "password": "1234",
+  "role": "user",
+  "activo": true
+}
+RESULTADO ESPERADO: 400 Bad Request
+=====================================
+
+
+=====================================
+EJERCICIO 3 - LOGOUT POR INACTIVIDAD
+=====================================
+TIPO: Frontend (sin endpoint nuevo)
+DESCRIPCIÓN: Hook useInactividad escucha eventos mousemove,
+keydown, click, scroll, touchstart. Si no hay actividad en
+el tiempo definido, limpia localStorage y redirige al login.
+TIEMPO CONFIGURADO: 2 minutos (ajustable en useInactividad.js)
+RESULTADO ESPERADO: Sesión cerrada automáticamente + mensaje naranja
+RESULTADO OBTENIDO: ✅ OK
+=====================================
+
+
+=====================================
+EJERCICIO 4 - OBTENER USUARIOS (admin)
+=====================================
+MÉTODO: GET
+URL: http://localhost:3000/users
+HEADERS: Authorization: Bearer <token-de-admin>
+BODY: (ninguno)
+RESULTADO ESPERADO: Lista de todos los usuarios en JSON
+
+=====================================
+EJERCICIO 4 - EDITAR ROL DE USUARIO
+=====================================
+MÉTODO: PATCH
+URL: http://localhost:3000/users/2
+HEADERS:
+  Content-Type: application/json
+  Authorization: Bearer <token-de-admin>
+BODY:
+{
+  "role": "admin"
+}
+RESULTADO ESPERADO: Usuario actualizado con nuevo rol
+
+=====================================
+EJERCICIO 4 - ELIMINAR USUARIO
+=====================================
+MÉTODO: DELETE
+URL: http://localhost:3000/users/2
+HEADERS: Authorization: Bearer <token-de-admin>
+BODY: (ninguno)
+RESULTADO ESPERADO: 200 OK, usuario eliminado de db.json
+=====================================
+
+

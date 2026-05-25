@@ -1,0 +1,32 @@
+{
+  "users": [
+    {
+      "id": 1,
+      "email": "admin@correo.com",
+      "password": "$2a$10$7WgD.qmr0dUsq7sMXTTWQuLE6uZmyhwOOcXDjInCV6Sq8NvMi3Yce",
+      "role": "admin",
+      "activo": true
+    },
+    {
+      "id": 2,
+      "email": "user@correo.com",
+      "password": "$2a$10$7WgD.qmr0dUsq7sMXTTWQuLE6uZmyhwOOcXDjInCV6Sq8NvMi3Yce",
+      "role": "user",
+      "activo": true
+    }
+  ],
+  "productos": [
+    {
+      "id": 1,
+      "nombre": "Teclado",
+      "precio": 150000
+    },
+    {
+      "id": 2,
+      "nombre": "Mouse",
+      "precio": 80000
+    }
+  ],
+  "sesiones": [],
+  "dashboard": []
+}
