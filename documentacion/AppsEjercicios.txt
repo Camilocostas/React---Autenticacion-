@@ -263,3 +263,504 @@ function App() {
 }
 
 export default App;
+
+5.
+
+// src/App.jsx
+import './App.css';
+import { useState, useCallback } from 'react';
+import Login from './components/Login';
+import Register from './components/Register';
+import ProductoLista from './components/ProductoLista';
+import Admin from './components/Admin';
+import useInactividad from './hooks/useInactividad';
+
+function App() {
+  const [token, setToken] = useState(localStorage.getItem('token'));
+  const [role, setRole] = useState(localStorage.getItem('role'));
+  const [vistaAuth, setVistaAuth] = useState('login');
+  const [vistaApp, setVistaApp] = useState('productos'); // 'productos' | 'admin'
+  const [mensajeLogout, setMensajeLogout] = useState('');
+
+  const handleLogout = useCallback((porInactividad = false) => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('role');
+    setToken(null);
+    setRole(null);
+    setVistaAuth('login');
+    setVistaApp('productos');
+    if (porInactividad) {
+      setMensajeLogout('Tu sesión se cerró por inactividad. Por favor inicia sesión de nuevo.');
+    } else {
+      setMensajeLogout('');
+    }
+  }, []);
+
+  const handleInactividad = useCallback(() => {
+    handleLogout(true);
+  }, [handleLogout]);
+
+  useInactividad(!!token, handleInactividad);
+
+  return (
+    <div>
+      <h1>Bienvenido a la tienda online</h1>
+
+      {!token ? (
+        <>
+          {mensajeLogout && (
+            <p style={{ color: 'orange', fontWeight: 'bold' }}>
+              ⚠️ {mensajeLogout}
+            </p>
+          )}
+          {vistaAuth === 'login' ? (
+            <>
+              <Login setToken={setToken} setRole={setRole} />
+              <br />
+              <button onClick={() => setVistaAuth('register')}>
+                ¿No tienes cuenta? Regístrate
+              </button>
+            </>
+          ) : (
+            <Register onVolverLogin={() => setVistaAuth('login')} />
+          )}
+        </>
+      ) : (
+        <>
+          <p>Rol actual: <strong>{role}</strong></p>
+
+          <button
+            onClick={() => handleLogout(false)}
+            style={{ marginBottom: '12px', marginRight: '12px' }}
+          >
+            Cerrar sesión
+          </button>
+
+          {role === 'admin' && vistaApp !== 'admin' && (
+            <button
+              onClick={() => setVistaApp('admin')}
+              style={{ marginBottom: '12px' }}
+            >
+              👥 Administrar usuarios
+            </button>
+          )}
+
+          {vistaApp === 'admin' ? (
+            <Admin token={token} onVolver={() => setVistaApp('productos')} />
+          ) : (
+            <ProductoLista token={token} role={role} />
+          )}
+        </>
+      )}
+    </div>
+  );
+}
+
+export default App;
+
+6.
+
+// src/App.jsx
+import './App.css';
+import { useState, useCallback } from 'react';
+import { Routes, Route, useNavigate } from 'react-router-dom';
+import Login from './components/Login';
+import Register from './components/Register';
+import ProductoLista from './components/ProductoLista';
+import Admin from './components/Admin';
+import Dashboard from './components/Dashboard';
+import ActivarCuenta from './components/ActivarCuenta';
+import useInactividad from './hooks/useInactividad';
+
+function App() {
+  const [token, setToken] = useState(localStorage.getItem('token'));
+  const [role, setRole] = useState(localStorage.getItem('role'));
+  const [vistaAuth, setVistaAuth] = useState('login');
+  const [vistaApp, setVistaApp] = useState('productos'); // 'productos' | 'admin' | 'dashboard'
+  const [mensajeLogout, setMensajeLogout] = useState('');
+  const navigate = useNavigate();
+
+  const handleLogout = useCallback((porInactividad = false) => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('role');
+    setToken(null);
+    setRole(null);
+    setVistaAuth('login');
+    setVistaApp('productos');
+    if (porInactividad) {
+      setMensajeLogout('Tu sesión se cerró por inactividad. Por favor inicia sesión de nuevo.');
+    } else {
+      setMensajeLogout('');
+    }
+    navigate('/');
+  }, [navigate]);
+
+  const handleInactividad = useCallback(() => {
+    handleLogout(true);
+  }, [handleLogout]);
+
+  useInactividad(!!token, handleInactividad);
+
+  return (
+    <Routes>
+      <Route path="/activar/:id" element={<ActivarCuenta />} />
+      <Route
+        path="/"
+        element={
+          <div>
+            <h1>Bienvenido a la tienda online</h1>
+
+            {!token ? (
+              <>
+                {mensajeLogout && (
+                  <p style={{ color: 'orange', fontWeight: 'bold' }}>
+                    ⚠️ {mensajeLogout}
+                  </p>
+                )}
+                {vistaAuth === 'login' ? (
+                  <>
+                    <Login setToken={setToken} setRole={setRole} />
+                    <br />
+                    <button onClick={() => setVistaAuth('register')}>
+                      ¿No tienes cuenta? Regístrate
+                    </button>
+                  </>
+                ) : (
+                  <Register onVolverLogin={() => setVistaAuth('login')} />
+                )}
+              </>
+            ) : (
+              <>
+                <p>Rol actual: <strong>{role}</strong></p>
+
+                <button
+                  onClick={() => handleLogout(false)}
+                  style={{ marginBottom: '12px', marginRight: '12px' }}
+                >
+                  Cerrar sesión
+                </button>
+
+                {role === 'admin' && vistaApp !== 'admin' && (
+                  <button
+                    onClick={() => setVistaApp('admin')}
+                    style={{ marginBottom: '12px', marginRight: '12px' }}
+                  >
+                    👥 Administrar usuarios
+                  </button>
+                )}
+
+                {vistaApp !== 'dashboard' && (
+                  <button
+                    onClick={() => setVistaApp('dashboard')}
+                    style={{ marginBottom: '12px' }}
+                  >
+                    📊 Mi Dashboard
+                  </button>
+                )}
+
+                {vistaApp === 'admin' && (
+                  <Admin
+                    token={token}
+                    onVolver={() => setVistaApp('productos')}
+                  />
+                )}
+
+                {vistaApp === 'dashboard' && (
+                  <Dashboard
+                    token={token}
+                    onVolver={() => setVistaApp('productos')}
+                  />
+                )}
+
+                {vistaApp === 'productos' && (
+                  <ProductoLista token={token} role={role} />
+                )}
+              </>
+            )}
+          </div>
+        }
+      />
+    </Routes>
+  );
+}
+
+export default App;
+
+.7
+// src/App.jsx
+import './App.css';
+import { useState, useCallback } from 'react';
+import { Routes, Route, useNavigate } from 'react-router-dom';
+import Login from './components/Login';
+import Register from './components/Register';
+import ProductoLista from './components/ProductoLista';
+import Admin from './components/Admin';
+import Dashboard from './components/Dashboard';
+import Historial from './components/Historial';
+import ActivarCuenta from './components/ActivarCuenta';
+import useInactividad from './hooks/useInactividad';
+
+function App() {
+  const [token, setToken] = useState(localStorage.getItem('token'));
+  const [role, setRole] = useState(localStorage.getItem('role'));
+  const [vistaAuth, setVistaAuth] = useState('login');
+  const [vistaApp, setVistaApp] = useState('productos'); // 'productos'|'admin'|'dashboard'|'historial'
+  const [mensajeLogout, setMensajeLogout] = useState('');
+  const navigate = useNavigate();
+
+  const handleLogout = useCallback((porInactividad = false) => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('role');
+    setToken(null);
+    setRole(null);
+    setVistaAuth('login');
+    setVistaApp('productos');
+    if (porInactividad) {
+      setMensajeLogout('Tu sesión se cerró por inactividad. Por favor inicia sesión de nuevo.');
+    } else {
+      setMensajeLogout('');
+    }
+    navigate('/');
+  }, [navigate]);
+
+  const handleInactividad = useCallback(() => {
+    handleLogout(true);
+  }, [handleLogout]);
+
+  useInactividad(!!token, handleInactividad);
+
+  return (
+    <Routes>
+      <Route path="/activar/:id" element={<ActivarCuenta />} />
+      <Route
+        path="/"
+        element={
+          <div>
+            <h1>Bienvenido a la tienda online</h1>
+
+            {!token ? (
+              <>
+                {mensajeLogout && (
+                  <p style={{ color: 'orange', fontWeight: 'bold' }}>
+                    ⚠️ {mensajeLogout}
+                  </p>
+                )}
+                {vistaAuth === 'login' ? (
+                  <>
+                    <Login setToken={setToken} setRole={setRole} />
+                    <br />
+                    <button onClick={() => setVistaAuth('register')}>
+                      ¿No tienes cuenta? Regístrate
+                    </button>
+                  </>
+                ) : (
+                  <Register onVolverLogin={() => setVistaAuth('login')} />
+                )}
+              </>
+            ) : (
+              <>
+                <p>Rol actual: <strong>{role}</strong></p>
+
+                <button
+                  onClick={() => handleLogout(false)}
+                  style={{ marginBottom: '12px', marginRight: '12px' }}
+                >
+                  Cerrar sesión
+                </button>
+
+                {role === 'admin' && vistaApp !== 'admin' && (
+                  <button
+                    onClick={() => setVistaApp('admin')}
+                    style={{ marginBottom: '12px', marginRight: '12px' }}
+                  >
+                    👥 Administrar usuarios
+                  </button>
+                )}
+
+                {vistaApp !== 'dashboard' && (
+                  <button
+                    onClick={() => setVistaApp('dashboard')}
+                    style={{ marginBottom: '12px', marginRight: '12px' }}
+                  >
+                    📊 Mi Dashboard
+                  </button>
+                )}
+
+                {vistaApp !== 'historial' && (
+                  <button
+                    onClick={() => setVistaApp('historial')}
+                    style={{ marginBottom: '12px' }}
+                  >
+                    🕐 Historial de sesiones
+                  </button>
+                )}
+
+                {vistaApp === 'admin' && (
+                  <Admin token={token} onVolver={() => setVistaApp('productos')} />
+                )}
+                {vistaApp === 'dashboard' && (
+                  <Dashboard token={token} onVolver={() => setVistaApp('productos')} />
+                )}
+                {vistaApp === 'historial' && (
+                  <Historial token={token} onVolver={() => setVistaApp('productos')} />
+                )}
+                {vistaApp === 'productos' && (
+                  <ProductoLista token={token} role={role} />
+                )}
+              </>
+            )}
+          </div>
+        }
+      />
+    </Routes>
+  );
+}
+
+export default App;
+
+8.
+
+// src/App.jsx
+import './App.css';
+import { useState, useCallback } from 'react';
+import { Routes, Route, useNavigate } from 'react-router-dom';
+import Login from './components/Login';
+import Register from './components/Register';
+import ProductoLista from './components/ProductoLista';
+import Admin from './components/Admin';
+import Dashboard from './components/Dashboard';
+import Historial from './components/Historial';
+import ActivarCuenta from './components/ActivarCuenta';
+import useInactividad from './hooks/useInactividad';
+
+function App() {
+  const [token, setToken] = useState(localStorage.getItem('token'));
+  const [role, setRole] = useState(localStorage.getItem('role'));
+  const [vistaAuth, setVistaAuth] = useState('login');
+  const [vistaApp, setVistaApp] = useState('productos');
+  const [mensajeLogout, setMensajeLogout] = useState('');
+  const [tipoMensaje, setTipoMensaje] = useState(''); // 'manual' | 'inactividad'
+  const navigate = useNavigate();
+
+  const handleLogout = useCallback((porInactividad = false) => {
+    // Limpiar todo el localStorage relacionado con la sesión
+    localStorage.removeItem('token');
+    localStorage.removeItem('role');
+
+    setToken(null);
+    setRole(null);
+    setVistaAuth('login');
+    setVistaApp('productos');
+
+    if (porInactividad) {
+      setTipoMensaje('inactividad');
+      setMensajeLogout('Tu sesión se cerró automáticamente por inactividad.');
+    } else {
+      setTipoMensaje('manual');
+      setMensajeLogout('Sesión cerrada correctamente. ¡Hasta pronto!');
+    }
+
+    navigate('/');
+  }, [navigate]);
+
+  const handleInactividad = useCallback(() => {
+    handleLogout(true);
+  }, [handleLogout]);
+
+  useInactividad(!!token, handleInactividad);
+
+  // Limpiar mensaje cuando el usuario empieza a escribir en el login
+  const handleSetToken = useCallback((nuevoToken) => {
+    setToken(nuevoToken);
+    setMensajeLogout('');
+    setTipoMensaje('');
+  }, []);
+
+  return (
+    <Routes>
+      <Route path="/activar/:id" element={<ActivarCuenta />} />
+      <Route
+        path="/"
+        element={
+          <div>
+            <h1>Bienvenido a la tienda online</h1>
+
+            {!token ? (
+              <>
+                {mensajeLogout && (
+                  <p style={{
+                    color: tipoMensaje === 'manual' ? 'green' : 'orange',
+                    fontWeight: 'bold',
+                    padding: '10px',
+                    border: `1px solid ${tipoMensaje === 'manual' ? 'green' : 'orange'}`,
+                    borderRadius: '6px',
+                    marginBottom: '16px'
+                  }}>
+                    {tipoMensaje === 'manual' ? '✅' : '⚠️'} {mensajeLogout}
+                  </p>
+                )}
+
+                {vistaAuth === 'login' ? (
+                  <>
+                    <Login setToken={handleSetToken} setRole={setRole} />
+                    <br />
+                    <button onClick={() => setVistaAuth('register')}>
+                      ¿No tienes cuenta? Regístrate
+                    </button>
+                  </>
+                ) : (
+                  <Register onVolverLogin={() => setVistaAuth('login')} />
+                )}
+              </>
+            ) : (
+              <>
+                <p>Rol actual: <strong>{role}</strong></p>
+
+                {/* Barra de navegación */}
+                <div style={{ marginBottom: '20px', display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+                  <button onClick={() => handleLogout(false)}>
+                    🚪 Cerrar sesión
+                  </button>
+
+                  <button onClick={() => setVistaApp('productos')}>
+                    🛒 Productos
+                  </button>
+
+                  <button onClick={() => setVistaApp('dashboard')}>
+                    📊 Mi Dashboard
+                  </button>
+
+                  <button onClick={() => setVistaApp('historial')}>
+                    🕐 Historial de sesiones
+                  </button>
+
+                  {role === 'admin' && (
+                    <button onClick={() => setVistaApp('admin')}>
+                      👥 Administrar usuarios
+                    </button>
+                  )}
+                </div>
+
+                {/* Vistas */}
+                {vistaApp === 'productos' && (
+                  <ProductoLista token={token} role={role} />
+                )}
+                {vistaApp === 'dashboard' && (
+                  <Dashboard token={token} onVolver={() => setVistaApp('productos')} />
+                )}
+                {vistaApp === 'historial' && (
+                  <Historial token={token} onVolver={() => setVistaApp('productos')} />
+                )}
+                {vistaApp === 'admin' && (
+                  <Admin token={token} onVolver={() => setVistaApp('productos')} />
+                )}
+              </>
+            )}
+          </div>
+        }
+      />
+    </Routes>
+  );
+}
+
+export default App;

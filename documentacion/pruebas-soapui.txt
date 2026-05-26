@@ -146,4 +146,125 @@ BODY: (ninguno)
 RESULTADO ESPERADO: 200 OK, usuario eliminado de db.json
 =====================================
 
+=====================================
+EJERCICIO 5 - ACTIVAR CUENTA
+=====================================
+MÉTODO: PATCH
+URL: http://localhost:3000/users/:id
+     (reemplaza :id con el id del usuario recién registrado)
+HEADERS:
+  Content-Type: application/json
+  Authorization: Bearer <token-del-registro>
+BODY:
+{
+  "activo": true
+}
+RESULTADO ESPERADO: Usuario actualizado con activo: true
+RESULTADO OBTENIDO: ✅ OK
 
+=====================================
+EJERCICIO 6 - OBTENER DASHBOARD
+=====================================
+MÉTODO: GET
+URL: http://localhost:3000/dashboard?userId=1
+HEADERS: Authorization: Bearer <token>
+BODY: (ninguno)
+RESULTADO ESPERADO:
+[
+  {
+    "id": 1,
+    "userId": 1,
+    "productosFavoritos": ["Teclado", "Mouse"],
+    "totalCompras": 3,
+    "ultimaConexion": "2026-05-26"
+  }
+]
+RESULTADO OBTENIDO: ✅ OK
+
+=====================================
+EJERCICIO 6 - DASHBOARD SIN TOKEN
+=====================================
+MÉTODO: GET
+URL: http://localhost:3000/dashboard?userId=1
+HEADERS: (ninguno)
+BODY: (ninguno)
+RESULTADO ESPERADO: "Missing authorization header"
+RESULTADO OBTENIDO: ✅ OK
+
+=====================================
+EJERCICIO 7 - REGISTRAR SESIÓN
+=====================================
+MÉTODO: POST
+URL: http://localhost:3000/sesiones
+HEADERS:
+  Content-Type: application/json
+  Authorization: Bearer <token>
+BODY:
+{
+  "userId": "1",
+  "timestamp": "2026-05-26T10:00:00.000Z"
+}
+RESULTADO ESPERADO: Sesión creada con id asignado
+RESULTADO OBTENIDO: ✅ OK
+
+=====================================
+EJERCICIO 7 - OBTENER HISTORIAL
+=====================================
+MÉTODO: GET
+URL: http://localhost:3000/sesiones?userId=1
+HEADERS: Authorization: Bearer <token>
+BODY: (ninguno)
+RESULTADO ESPERADO: Array de sesiones del usuario
+RESULTADO OBTENIDO: ✅ OK
+
+=====================================
+EJERCICIO 8 - LOGOUT + REDIRECT
+=====================================
+TIPO: Frontend (sin endpoint nuevo)
+DESCRIPCIÓN:
+  - Logout manual → mensaje verde + redirect a /
+  - Logout por inactividad → mensaje naranja + redirect a /
+  - localStorage limpiado: token + role eliminados
+  - Mensaje desaparece al volver a iniciar sesión
+RESULTADO ESPERADO: Redirección correcta + mensaje diferenciado
+RESULTADO OBTENIDO: ✅ OK
+=====================================
+
+
+=====================================
+EJERCICIO 7 - REGISTRAR SESIÓN
+=====================================
+MÉTODO: POST
+URL: http://localhost:3000/sesiones
+HEADERS:
+  Content-Type: application/json
+  Authorization: Bearer <token>
+BODY:
+{
+  "userId": "1",
+  "timestamp": "2026-05-26T10:00:00.000Z"
+}
+RESULTADO ESPERADO: Sesión creada con id asignado
+
+=====================================
+EJERCICIO 7 - OBTENER HISTORIAL
+=====================================
+MÉTODO: GET
+URL: http://localhost:3000/sesiones?userId=1
+HEADERS: Authorization: Bearer <token>
+BODY: (ninguno)
+RESULTADO ESPERADO: Array de sesiones del usuario
+=====================================
+
+=====================================
+EJERCICIO 8 - LOGOUT + REDIRECT
+=====================================
+TIPO: Frontend (sin endpoint nuevo)
+DESCRIPCIÓN:
+  - Logout manual → mensaje verde + redirect a /
+  - Logout por inactividad → mensaje naranja + redirect a /
+  - localStorage limpiado: token + role eliminados
+  - Mensaje desaparece al volver a iniciar sesión
+RESULTADO ESPERADO: Redirección correcta + mensaje diferenciado
+RESULTADO OBTENIDO: ✅ OK
+=====================================

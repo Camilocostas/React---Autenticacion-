@@ -6,16 +6,15 @@
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [role, setRole] = useState('user');
-    const [mensaje, setMensaje] = useState('');
     const [error, setError] = useState('');
     const [cargando, setCargando] = useState(false);
+    const [datosActivacion, setDatosActivacion] = useState(null);
 
     const handleRegistro = async (e) => {
         e.preventDefault();
-        setMensaje('');
         setError('');
+        setDatosActivacion(null);
 
-        // Validación básica
         if (!email || !password) {
         setError('El correo y la contraseña son obligatorios.');
         return;
@@ -29,16 +28,18 @@
         setCargando(true);
 
         try {
-        await register({ email, password, role });
-        setMensaje(`Usuario ${email} registrado correctamente. Ahora puedes iniciar sesión.`);
-        // Limpiar formulario
+        const res = await register({ email, password, role });
+        const { accessToken, user } = res.data;
+        setDatosActivacion({
+            id: user.id,
+            email: user.email,
+            token: accessToken,
+        });
         setEmail('');
         setPassword('');
         setRole('user');
         } catch (err) {
         console.error('Error en registro:', err);
-
-        // json-server-auth devuelve 400 si el correo ya existe
         if (err.response?.status === 400) {
             setError('Este correo ya está registrado.');
         } else {
@@ -49,11 +50,28 @@
         }
     };
 
+    // Pantalla de éxito con enlace de activación
+    if (datosActivacion) {
+        return (
+        <div>
+            <h2>Registro exitoso</h2>
+            <p style={{ color: 'green' }}>
+            Usuario <strong>{datosActivacion.email}</strong> creado correctamente.
+            </p>
+            <p>Para activar tu cuenta haz clic en el siguiente enlace:</p>
+            <a href={`/activar/${datosActivacion.id}?token=${datosActivacion.token}`}>
+            ✅ Activar mi cuenta
+            </a>
+            <br /><br />
+            <button onClick={onVolverLogin}>← Volver al Login</button>
+        </div>
+        );
+    }
+
     return (
         <div>
         <h2>Registro de usuario</h2>
 
-        {mensaje && <p style={{ color: 'green' }}>{mensaje}</p>}
         {error && <p style={{ color: 'red' }}>{error}</p>}
 
         <input
@@ -63,7 +81,6 @@
             onChange={(e) => setEmail(e.target.value)}
         />
         <br />
-
         <input
             type="password"
             placeholder="Contraseña (mínimo 4 caracteres)"
@@ -71,8 +88,7 @@
             onChange={(e) => setPassword(e.target.value)}
         />
         <br />
-
-        <label>Rol:</label>
+        <label>Rol: </label>
         <select value={role} onChange={(e) => setRole(e.target.value)}>
             <option value="user">Usuario</option>
             <option value="admin">Administrador</option>
@@ -82,12 +98,8 @@
         <button onClick={handleRegistro} disabled={cargando}>
             {cargando ? 'Registrando...' : 'Registrar'}
         </button>
-
         <br /><br />
-
-        <button onClick={onVolverLogin}>
-            ← Volver al Login
-        </button>
+        <button onClick={onVolverLogin}>← Volver al Login</button>
         </div>
     );
     }

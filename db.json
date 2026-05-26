@@ -6,13 +6,6 @@
       "password": "$2a$10$7WgD.qmr0dUsq7sMXTTWQuLE6uZmyhwOOcXDjInCV6Sq8NvMi3Yce",
       "role": "admin",
       "activo": true
-    },
-    {
-      "id": 2,
-      "email": "user@correo.com",
-      "password": "$2a$10$7WgD.qmr0dUsq7sMXTTWQuLE6uZmyhwOOcXDjInCV6Sq8NvMi3Yce",
-      "role": "user",
-      "activo": true
     }
   ],
   "productos": [
@@ -27,6 +20,48 @@
       "precio": 80000
     }
   ],
-  "sesiones": [],
-  "dashboard": []
+  "sesiones": [
+    {
+      "userId": "1",
+      "timestamp": "2026-05-26T22:03:31.479Z",
+      "id": 1
+    },
+    {
+      "userId": "1",
+      "timestamp": "2026-05-26T22:04:49.898Z",
+      "id": 2
+    },
+    {
+      "userId": "1",
+      "timestamp": "2026-05-26T22:11:05.150Z",
+      "id": 3
+    },
+    {
+      "userId": "1",
+      "timestamp": "2026-05-26T22:12:01.646Z",
+      "id": 4
+    },
+    {
+      "userId": "1",
+      "timestamp": "2026-05-26T22:12:53.770Z",
+      "id": 5
+    },
+    {
+      "userId": "1",
+      "timestamp": "2026-05-26T22:14:47.191Z",
+      "id": 6
+    }
+  ],
+  "dashboard": [
+    {
+      "id": 1,
+      "userId": 1,
+      "productosFavoritos": [
+        "Teclado",
+        "Mouse"
+      ],
+      "totalCompras": 3,
+      "ultimaConexion": "2026-05-26"
+    }
+  ]
 }

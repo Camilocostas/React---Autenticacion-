@@ -31,7 +31,7 @@
         email: userData.email,
         password: userData.password,
         role: userData.role,
-        activo: true,
+        activo: false,
         });
         return response;
     } catch (error) {
@@ -66,7 +66,7 @@
     }
     };
 
-    // EDITAR USUARIO (requiere token admin)
+    // EDITAR USUARIO (requiere token)
     export const editarUsuario = async (token, id, datos) => {
     try {
         const response = await apiClient.patch(`/users/${id}`, datos, {
@@ -79,7 +79,7 @@
     }
     };
 
-    // ELIMINAR USUARIO (requiere token admin)
+    // ELIMINAR USUARIO (requiere token)
     export const eliminarUsuario = async (token, id) => {
     try {
         const response = await apiClient.delete(`/users/${id}`, {
@@ -88,6 +88,65 @@
         return response;
     } catch (error) {
         console.error('Error al eliminar usuario:', error);
+        throw error;
+    }
+    };
+
+    // ACTIVAR CUENTA
+    export const activarUsuario = async (token, id) => {
+    try {
+        const response = await apiClient.patch(
+        `/users/${id}`,
+        { activo: true },
+        { headers: { Authorization: `Bearer ${token}` } }
+        );
+        return response;
+    } catch (error) {
+        console.error('Error al activar cuenta:', error);
+        throw error;
+    }
+    };
+
+    // OBTENER DASHBOARD (requiere token)
+    export const obtenerDashboard = async (token, userId) => {
+    try {
+        const response = await apiClient.get(`/dashboard?userId=${userId}`, {
+        headers: { Authorization: `Bearer ${token}` },
+        });
+        return response;
+    } catch (error) {
+        console.error('Error al obtener dashboard:', error);
+        throw error;
+    }
+    };
+
+    // REGISTRAR SESIÓN (requiere token)
+    export const registrarSesion = async (token, userId) => {
+    try {
+        const response = await apiClient.post(
+        '/sesiones',
+        {
+            userId: userId,
+            timestamp: new Date().toISOString(),
+        },
+        { headers: { Authorization: `Bearer ${token}` } }
+        );
+        return response;
+    } catch (error) {
+        console.error('Error al registrar sesión:', error);
+        throw error;
+    }
+    };
+
+    // OBTENER SESIONES (requiere token)
+    export const obtenerSesiones = async (token, userId) => {
+    try {
+        const response = await apiClient.get(`/sesiones?userId=${userId}`, {
+        headers: { Authorization: `Bearer ${token}` },
+        });
+        return response;
+    } catch (error) {
+        console.error('Error al obtener sesiones:', error);
         throw error;
     }
     };

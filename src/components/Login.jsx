@@ -1,6 +1,7 @@
     // src/components/Login.jsx
     import { useState } from 'react';
-    import { login } from '../services/api';
+    import { login, registrarSesion } from '../services/api';
+    import { decodificarToken } from '../utils/jwt';
 
     function Login({ setToken, setRole }) {
     const [email, setEmail] = useState('');
@@ -19,6 +20,15 @@
 
         localStorage.setItem('token', token);
         localStorage.setItem('role', role);
+
+        // Decodificar token para obtener userId y registrar la sesión
+        const decoded = decodificarToken(token);
+        if (decoded?.sub) {
+            // No bloqueamos el login si falla el registro de sesión
+            registrarSesion(token, decoded.sub).catch((err) =>
+            console.error('No se pudo registrar la sesión:', err)
+            );
+        }
 
         setToken(token);
         setRole(role);

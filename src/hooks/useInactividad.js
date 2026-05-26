@@ -3,8 +3,8 @@
 
     // Tiempo en milisegundos (5 minutos = 300000)
     // Usamos 2 minutos (120000) para poder probarlo más fácil
-    const TIEMPO_INACTIVIDAD = 2 * 60 * 1000;
-    //const TIEMPO_INACTIVIDAD = 10 * 1000; // 10 segundos para prueba
+    //const TIEMPO_INACTIVIDAD = 2 * 60 * 1000;
+    const TIEMPO_INACTIVIDAD = 10 * 1000; // 10 segundos para prueba
 
     // Eventos que se consideran "actividad del usuario"
     const EVENTOS = ['mousemove', 'keydown', 'click', 'scroll', 'touchstart'];
